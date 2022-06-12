@@ -66,4 +66,10 @@ public class RatingServiceImp implements RatingService{
         throw new RuntimeException("rating is  empty");
 
     }
+
+    @Override
+    public Mono<Void> removeById(String id) {
+        repo.deleteAllById(id);
+        return Mono.empty();
+    }
 }

@@ -38,4 +38,9 @@ public class RatingController {
         Mono<RatingDTO> rDMono = ratingServiceImp.updateById(dto.getId());
         return ResponseEntity.accepted().body(rDMono);
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> removeRating(String id){
+       Mono<Void>  voidMono = ratingServiceImp.removeById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
