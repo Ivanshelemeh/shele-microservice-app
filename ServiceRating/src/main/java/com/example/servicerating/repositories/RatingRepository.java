@@ -22,4 +22,6 @@ public interface RatingRepository extends ReactiveCrudRepository<Rating, String>
 
     @Query("({'rate': ?0})")
     Mono<Rating> findRatingByRate(@Param("rate") Double rate);
+
+    Mono<Void> deleteById(@Param("id")String id);
 }

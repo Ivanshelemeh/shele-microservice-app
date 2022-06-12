@@ -16,4 +16,6 @@ public interface RatingService {
 
     void saveRDTO(RatingDTO ratingDTOMono);
 
+    Mono<Void> removeById(String id);
+
 }
