@@ -1,0 +1,21 @@
+version: '3.8'
+  services:
+    gateway:
+      build: shele-microservice-app/SpringApiGetaway
+      ports:
+        -"8443:8443"
+      environment:
+        -SPRING_PROFILES_ACTIVE=docker
+        -SERVER_SSL_KEY_STORE=file:/keystore/shele.p12
+        -SERVER_SSL_KEY_STORE_PASSWORD=password
+      volumes:
+        -$PWD/keystore:/keystore
+      mem_limit: 512
+      restart: on-failure
+
+  redis_cache:
+    image: redis:latest
+    restart: on-failure
+    command: [ "redis-server","--bind","redis_cache","--port","6379" ]
+    ports:
+      - "6379:6379"
