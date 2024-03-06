@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -13,13 +14,6 @@
         <module name="BikeCustomServise" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="BikeCustomerDiscoveryService" target="11" />
-      <module name="BikeCustomServise" target="11" />
-      <module name="MainConfigServer" target="11" />
-      <module name="ServiceRating" target="16" />
-      <module name="SpringApiGetaway" target="11" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

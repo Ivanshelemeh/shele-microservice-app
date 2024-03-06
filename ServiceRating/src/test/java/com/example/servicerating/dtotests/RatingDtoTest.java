@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RatingDtoTest {
 
-    @Autowired
+
     private Converter converter = new Converter();
 
     @Test

@@ -2,7 +2,6 @@ package com.example.servicerating.controller;
 
 import com.example.servicerating.dto.RatingDTO;
 import com.example.servicerating.service.RatingServiceImp;
-import com.example.servicerating.utils.Converter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class RatingController {
 
     private final RatingServiceImp ratingServiceImp;
-    private final Converter converter;
 
     @GetMapping(value = "/all", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Flux<RatingDTO>> getAllRatings() {
