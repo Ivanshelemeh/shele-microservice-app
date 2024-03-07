@@ -13,14 +13,15 @@ public interface RatingRepository extends ReactiveCrudRepository<Rating, String>
 
     Flux<Rating> findAll();
 
-    @Query("({'description': {$exist: true}})")
+    @Query("{'description': {$exist: true}}")
     Mono<Rating> findRatingByDescription(@Param("description") String description);
+
 
     void deleteAllById(String id);
 
     void save();
 
-    @Query("({'rate': ?0})")
+    @Query("{'rate': ?0}")
     Mono<Rating> findRatingByRate(@Param("rate") Double rate);
 
     Mono<Void> deleteById(@Param("id")String id);

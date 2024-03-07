@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RatingServiceImp implements RatingService{
+public class RatingServiceImp implements RatingService {
 
     private final Converter converter;
     private final RatingRepository repo;
@@ -24,7 +24,7 @@ public class RatingServiceImp implements RatingService{
     @Override
     public Flux<RatingDTO> findAllRatings() {
         return repo.findAll()
-                .filter(r->r.getRate()!=0)
+                .filter(r -> r.getRate() != 0)
                 .map(converter::convertFromEntity)
                 .switchIfEmpty(Flux.empty());
     }
@@ -39,17 +39,17 @@ public class RatingServiceImp implements RatingService{
 
     @Override
     public Mono<Void> deleteByDescription(String des) {
-        if (des== null){
+        if (des == null ||des.isEmpty()) {
             throw new IllegalArgumentException(" not such field exist");
         }
-      return   repo.deleteById(des)
+        return repo.deleteById(des)
                 .switchIfEmpty(Mono.empty());
     }
 
     @Override
     public Mono<RatingDTO> updateById(String id) {
         return repo.findById(id)
-                .doOnNext(e->e.setId(id))
+                .doOnNext(e -> e.setId(id))
                 .flatMap(repo::save)
                 .map(converter::convertFromEntity)
                 .switchIfEmpty(Mono.empty());
@@ -58,7 +58,7 @@ public class RatingServiceImp implements RatingService{
     @Override
     @SneakyThrows
     public void saveRDTO(RatingDTO r) {
-        if (r!= null){
+        if (r != null) {
             Rating rating = converter.convertFromDTO(r);
             repo.save(rating);
         }
