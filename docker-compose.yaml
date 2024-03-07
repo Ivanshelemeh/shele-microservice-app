@@ -1,7 +1,7 @@
 version: '3.8'
 services:
     gateway:
-       build: shele-microservice-app/SpringApiGetaway
+       build: SpringApiGetaway
        ports:
          - 8443:8445
        environment:
