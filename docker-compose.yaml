@@ -14,9 +14,3 @@ services:
 
        restart: on-failure
 
-    redis_cache:
-     image: "redis:7.0"
-     restart: on-failure
-     command: [ "redis-server","--bind","redis_cache","--port","6379" ]
-     ports:
-      - "6379:6379"

@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  mongo_db:
+    image: mongo:4.2.6-bionic
+    ports:
+      - "27017-27019:27017-27019"
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: root
+        MONGO_INITDB_ROOT_PASSWORD: password
+        MONGO_INITDB_DATABASE: mongo
+    healthcheck:
+      test: "mongo --eval 'db.stats().ok'"
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: on-failure
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: on-failure
+
+
+  redis_cache:
+    image: "redis:7.0"
+    restart: on-failure
+    command: [ "redis-server","--bind","redis_cache","--port","6379" ]
+    ports:
+        - "6379:6379"
+
