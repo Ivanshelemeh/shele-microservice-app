@@ -35,4 +35,52 @@ services:
     command: [ "redis-server","--bind","redis_cache","--port","6379" ]
     ports:
         - "6379:6379"
+        -
+  gateway:
+      container_name: "shele-gateway"
+      image: "edge-shele-gateway"
+      depends_on:
+       - rabbitmq
+       - redis_cache
+      ports:
+        - 8443:9000
+      environment:
+        ##-SPRING_PROFILES_ACTIVE=docker
+        ## -SERVER_SSL_KEY_STORE=file:/keystore/shele.p12
+        ##-SERVER_SSL_KEY_STORE_PASSWORD=password
+        - SPRING_REDIS_HOST=redis_cache
+      volumes:
+        - $PWD/keystore:/keystore
+
+      restart: on-failure
+  bikecustomer-service:
+    container_name: "bikecustomer"
+    image: "bikecustomer-shele-service"
+    depends_on:
+      - redis_cache
+      - mysql-service
+    ports:
+      - 8012:8050
+    environment:
+      - SPRING_REDIS_HOST=redis_cache
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-service:3306/bike_db?useUnicode=true&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+      - SPRING_FLYWAY_URL=jdbc:mysql://mysql-service:3306/bike_db?useUnicode=true&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+
+  mysql-service:
+    image: mysql:8.0.20
+    ports:
+        - "3306:3306"
+    environment:
+        - MYSQL_ROOT_PASSWORD=password
+        - MYSQL_DATABASE=bike_db
+        - MYSQL_USER=root
+        - MYSQL_PASSWORD=password
+        - MYSQL_ROOT_HOST=%
+    healthcheck:
+        test: "/usr/bin/mysql --user=root --password=password --execute \"SHOW DATABASES;\""
+        interval: 10s
+        timeout: 5s
+        retries: 10
+    restart: on-failure
+
 
