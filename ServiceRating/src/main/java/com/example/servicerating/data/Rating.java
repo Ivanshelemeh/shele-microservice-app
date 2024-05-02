@@ -8,7 +8,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @Data
 @NoArgsConstructor
@@ -24,7 +27,12 @@ public class Rating {
     private String description;
     @Field("rate")
     @NotNull
+    @PositiveOrZero
     private double rate;
+
+    public Rating of() {
+        return new Rating( id,  description, rate);
+    }
 
 
 }
