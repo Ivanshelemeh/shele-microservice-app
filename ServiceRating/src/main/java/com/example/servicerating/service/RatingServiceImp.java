@@ -12,6 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +41,7 @@ public class RatingServiceImp implements RatingService {
     @Override
     public Mono<Void> deleteByDescription(String des) {
         if (des == null ||des.isEmpty()) {
+            log.debug("descprition not found {}",des);
             throw new IllegalArgumentException(" not such field exist");
         }
         return repo.deleteById(des)
@@ -68,7 +70,11 @@ public class RatingServiceImp implements RatingService {
     }
 
     @Override
-    public Mono<Void> removeById(String id) {
+    public Mono<Void> removeById(@NotNull String id) {
+        if (Objects.isNull(id)){
+            log.debug("there is not such rate {}", id);
+            throw new RuntimeException("Rate withn id is not exists");
+        }
         repo.deleteAllById(id);
         return Mono.empty();
     }
