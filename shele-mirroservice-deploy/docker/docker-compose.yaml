@@ -34,8 +34,8 @@ services:
     restart: on-failure
     command: [ "redis-server","--bind","redis_cache","--port","6379" ]
     ports:
-        - "6379:6379"
-        -
+        - 6379:6379
+
   gateway:
       container_name: "shele-gateway"
       image: "edge-shele-gateway"
@@ -82,5 +82,15 @@ services:
         timeout: 5s
         retries: 10
     restart: on-failure
+
+  shele-keycloack:
+    image: quay.io/keycloak/keycloak:19.0
+    container_name: "shele-keycloak"
+    command: start-dev
+    environment:
+      - KEYCLOAK_ADMIN=user
+      - KEYCLOAK_ADMIN_PASSWORD=password
+    ports:
+      - 8080:8080
 
 
