@@ -74,6 +74,8 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: localhost:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_MESSAGE_MAX_BYTES: 1000012
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
 
   zookeeper:
     image: confluentinc/cp-zookeeper:3.3.1
