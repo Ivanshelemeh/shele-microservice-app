@@ -38,10 +38,19 @@ public class RecommendationServiceImpl implements RecommendationService {
                 .switchIfEmpty(Mono.empty());
     }
 
+    @SneakyThrows
+    @Override
+    public Mono<RecommedationDTO> getByRecommID(String id) {
+        return repo.findRecommendationByID(id)
+                .map(converter::convertFromEntity)
+                .switchIfEmpty(Mono.empty());
+
+    }
+
     @Override
     public Mono<Void> deleteByDescription(String des) {
-        if (des == null ||des.isEmpty()) {
-            log.debug("descprition not found {}",des);
+        if (des == null || des.isEmpty()) {
+            log.debug("descprition not found {}", des);
             throw new IllegalArgumentException(" not such field exist");
         }
         return repo.deleteById(des)
@@ -71,7 +80,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     @Override
     public Mono<Void> removeById(@NotNull String id) {
-        if (Objects.isNull(id)){
+        if (Objects.isNull(id)) {
             log.debug("there is not such rate {}", id);
             throw new RuntimeException("Rate withn id is not exists");
         }

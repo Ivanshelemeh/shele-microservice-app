@@ -6,6 +6,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 
 public record RecommendationDTO(
+
+        String recommendationId,
         @PositiveOrZero
         @NonNull
         Double orderRate,

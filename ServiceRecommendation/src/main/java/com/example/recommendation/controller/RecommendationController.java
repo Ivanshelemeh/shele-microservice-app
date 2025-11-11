@@ -25,6 +25,11 @@ public class RecommendationController {
         return ResponseEntity.ok().body(ratingDTOList);
     }
 
+    @GetMapping("/{id}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Mono<>RecommendationDTO>> getRecommendation(@PathVariable String id){
+        return ResponseEntity.ok().body(recommendationService.getByRecommID(id));
+    }
+
     @GetMapping(value = "/{rate}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Mono<RecommendationDTO>> getRatingDto(@PathVariable Double rate) {
         Mono<RecommendationDTO> ratingDTOMono = recommendationService.findByRate(rate);

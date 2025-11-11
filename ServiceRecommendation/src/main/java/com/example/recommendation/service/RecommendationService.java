@@ -9,6 +9,8 @@ public interface RecommendationService {
 
     Mono<RecommendationDTO> findByRate(Double r);
 
+    Mono<RecommendationDTO> getByRecommID(String id);
+
     Mono<RecommendationDTO> updateById(String id, Double newRate);
 
     void saveRDTO(RecommendationDTO recommendationDTOMono);

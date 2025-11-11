@@ -11,10 +11,10 @@ import reactor.core.publisher.Mono;
 public interface RecommendationRepository extends ReactiveCrudRepository<Recommendation, String> {
 
     @Query
-    Mono<Recommendation> findRatingById(String id);
+    Mono<Recommendation> findRecommendationById(String id);
 
     @Query
-    Mono<Recommendation> findRatingByRate(Double rate);
+    Mono<Recommendation> findRecommendationByRate(Double rate);
 
     Mono<Void> deleteById(@Param("id")String id);
 }
