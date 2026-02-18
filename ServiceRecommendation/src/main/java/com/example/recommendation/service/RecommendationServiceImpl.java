@@ -1,6 +1,6 @@
-package com.example.servicerating.service;
+package com.example.recommendation.service;
 
-import com.example.servicerating.data.Recommendation;
+import com.example.recommendation.data.Recommendation;
 import com.example.servicerating.dto.RecommendationDTO;
 import com.example.servicerating.repositories.RecommendationRepository;
 import com.example.servicerating.utils.Converter;
