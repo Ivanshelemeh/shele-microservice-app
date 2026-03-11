@@ -19,8 +19,8 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     ports:
-      - 5672:5672
-      - 15672:15672
+      - 5673:5673
+      - 15673:15673
     healthcheck:
       test: [ "CMD", "rabbitmqctl", "status" ]
       interval: 10s
@@ -34,42 +34,12 @@ services:
     restart: on-failure
     command: [ "redis-server","--bind","redis_cache","--port","6379" ]
     ports:
-        - "6379:6379"
-        -
-  gateway:
-      container_name: "shele-gateway"
-      image: "edge-shele-gateway"
-      depends_on:
-       - rabbitmq
-       - redis_cache
-      ports:
-        - 8443:9000
-      environment:
-        ##-SPRING_PROFILES_ACTIVE=docker
-        ## -SERVER_SSL_KEY_STORE=file:/keystore/shele.p12
-        ##-SERVER_SSL_KEY_STORE_PASSWORD=password
-        - SPRING_REDIS_HOST=redis_cache
-      volumes:
-        - $PWD/keystore:/keystore
-
-      restart: on-failure
-  bikecustomer-service:
-    container_name: "bikecustomer"
-    image: "bikecustomer-shele-service"
-    depends_on:
-      - redis_cache
-      - mysql-service
-    ports:
-      - 8012:8050
-    environment:
-      - SPRING_REDIS_HOST=redis_cache
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-service:3306/bike_db?useUnicode=true&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-      - SPRING_FLYWAY_URL=jdbc:mysql://mysql-service:3306/bike_db?useUnicode=true&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+        - 6379:6379
 
   mysql-service:
     image: mysql:8.0.20
     ports:
-        - "3306:3306"
+        - 3307:3307
     environment:
         - MYSQL_ROOT_PASSWORD=password
         - MYSQL_DATABASE=bike_db
@@ -83,4 +53,44 @@ services:
         retries: 10
     restart: on-failure
 
+  shele-keycloack:
+    image: quay.io/keycloak/keycloak:19.0
+    container_name: "shele-keycloak"
+    command: start-dev
+    environment:
+      - KEYCLOAK_ADMIN=user
+      - KEYCLOAK_ADMIN_PASSWORD=password
+    ports:
+      - 8080:8080
+
+  shele-kafka:
+    image:  confluentinc/cp-kafka:3.3.1
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: localhost:32181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_MESSAGE_MAX_BYTES: 1000012
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:3.3.1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:3.3.1
+    network_mode: host
+    depends_on:
+      - zookeeper
+      - shele-kafka
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: localhost:32181
+      SCHEMA_REGISTRY_HOST_NAME: localhost
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8084
 

@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: composite-service
+
+
+springdoc:
+  swagger-ui.path: /openapi/swagger-ui.html
+  api-docs.path: /openapi/v3/api-docs
+  packagesToScan: composite-service.com.example.copmpositeservice
+  pathsToMatch: /**
+server:
+  port: 7001
+  error:
+    include-message: always
+
+app:
+  bike-order-service:
+    host: localhost
+    port: 8013
+
+
