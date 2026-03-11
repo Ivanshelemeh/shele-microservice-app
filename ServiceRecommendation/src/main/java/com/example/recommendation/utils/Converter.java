@@ -1,23 +1,17 @@
-package com.example.servicerating.utils;
+package com.example.recommendation.utils;
 
-import com.example.servicerating.data.Recommendation;
-import com.example.servicerating.dto.RecommendationDTO;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
+import com.example.recommendation.data.Recommendation;
+import com.example.recommendation.dto.RecommendationDTO;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Converter {
 
-    public static final ModelMapper MODEL_MAPPER = new ModelMapper();
-
-    public RecommendationDTO convertFromEntity(Recommendation recommendation){
-        return MODEL_MAPPER.map(recommendation, RecommendationDTO.class);
+    public RecommendationDTO convertFromEntity(Recommendation rec) {
+        return new RecommendationDTO(rec.getId(), rec.getRate(), rec.getDescription());
     }
 
-    public Recommendation convertFromDTO(RecommendationDTO recommendationDTO){
-        MODEL_MAPPER.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        return MODEL_MAPPER.map(recommendationDTO, Recommendation.class);
-
+    public Recommendation convertFromDTO(RecommendationDTO dto) {
+        return new Recommendation(dto.recommendationId(), dto.description(), dto.rate());
     }
 }

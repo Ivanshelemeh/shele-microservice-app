@@ -1,11 +1,10 @@
 package com.example.recommendation.service;
 
 import com.example.recommendation.data.Recommendation;
-import com.example.servicerating.dto.RecommendationDTO;
-import com.example.servicerating.repositories.RecommendationRepository;
-import com.example.servicerating.utils.Converter;
+import com.example.recommendation.dto.RecommendationDTO;
+import com.example.recommendation.repositories.RecommendationRepository;
+import com.example.recommendation.utils.Converter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -30,30 +29,17 @@ public class RecommendationServiceImpl implements RecommendationService {
                 .switchIfEmpty(Flux.empty());
     }
 
-    @SneakyThrows
     @Override
     public Mono<RecommendationDTO> findByRate(@NotNull Double r) {
-        return repo.findRatingByRate(r)
+        return repo.findByRate(r)
                 .map(converter::convertFromEntity)
                 .switchIfEmpty(Mono.empty());
     }
 
-    @SneakyThrows
     @Override
-    public Mono<RecommedationDTO> getByRecommID(String id) {
-        return repo.findRecommendationByID(id)
+    public Mono<RecommendationDTO> getByRecommID(String id) {
+        return repo.findRecommendationById(id)
                 .map(converter::convertFromEntity)
-                .switchIfEmpty(Mono.empty());
-
-    }
-
-    @Override
-    public Mono<Void> deleteByDescription(String des) {
-        if (des == null || des.isEmpty()) {
-            log.debug("descprition not found {}", des);
-            throw new IllegalArgumentException(" not such field exist");
-        }
-        return repo.deleteById(des)
                 .switchIfEmpty(Mono.empty());
     }
 
@@ -67,24 +53,22 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     @Override
-    @SneakyThrows
     public void saveRDTO(RecommendationDTO r) {
         if (r != null) {
             Recommendation recommendation = converter.convertFromDTO(r);
-            repo.save(recommendation);
+            repo.save(recommendation).subscribe();
+            return;
         }
-        log.debug("something wrong with RatingDto model");
-        throw new RuntimeException("rating is  empty");
-
+        log.debug("something wrong with RecommendationDTO model");
+        throw new RuntimeException("recommendation DTO is empty");
     }
 
     @Override
     public Mono<Void> removeById(@NotNull String id) {
         if (Objects.isNull(id)) {
-            log.debug("there is not such rate {}", id);
-            throw new RuntimeException("Rate withn id is not exists");
+            log.debug("there is no such recommendation with id {}", id);
+            throw new RuntimeException("Recommendation with id does not exist");
         }
-        repo.deleteAllById(id);
-        return Mono.empty();
+        return repo.deleteById(id);
     }
 }

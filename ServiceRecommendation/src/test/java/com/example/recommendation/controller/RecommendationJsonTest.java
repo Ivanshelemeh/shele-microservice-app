@@ -1,6 +1,6 @@
-package com.example.servicerating.controller;
+package com.example.recommendation.controller;
 
-import com.example.servicerating.data.Recommendation;
+import com.example.recommendation.data.Recommendation;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -18,13 +18,13 @@ public class RecommendationJsonTest {
 
     @Test
     void testSerialize() throws IOException {
-        var rating = new Recommendation("34","Fully story",23.55);
-        var jsoncontent = jacksonTester.write(rating);
-        assertThat(jsoncontent).extractingJsonPathStringValue("@.id")
+        var rating = new Recommendation("34", "Fully story", 23.55);
+        var jsonContent = jacksonTester.write(rating);
+        assertThat(jsonContent).extractingJsonPathStringValue("@.id")
                 .isEqualTo(rating.getId());
-        assertThat(jsoncontent).extractingJsonPathStringValue("@.description")
+        assertThat(jsonContent).extractingJsonPathStringValue("@.description")
                 .isEqualTo(rating.getDescription());
-        assertThat(jsoncontent).extractingJsonPathNumberValue("@.rate")
+        assertThat(jsonContent).extractingJsonPathNumberValue("@.rate")
                 .isEqualTo(rating.getRate());
     }
 }

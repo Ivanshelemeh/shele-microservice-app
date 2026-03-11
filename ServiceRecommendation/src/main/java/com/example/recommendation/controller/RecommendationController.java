@@ -1,7 +1,7 @@
-package com.example.servicerating.controller;
+package com.example.recommendation.controller;
 
-import com.example.servicerating.dto.RecommendationDTO;
-import com.example.servicerating.service.RatingServiceImp;
+import com.example.recommendation.dto.RecommendationDTO;
+import com.example.recommendation.service.RecommendationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +25,12 @@ public class RecommendationController {
         return ResponseEntity.ok().body(ratingDTOList);
     }
 
-    @GetMapping("/{id}", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Mono<>RecommendationDTO>> getRecommendation(@PathVariable String id){
+    @GetMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Mono<RecommendationDTO>> getRecommendation(@PathVariable String id) {
         return ResponseEntity.ok().body(recommendationService.getByRecommID(id));
     }
 
-    @GetMapping(value = "/{rate}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/rate/{rate}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Mono<RecommendationDTO>> getRatingDto(@PathVariable Double rate) {
         Mono<RecommendationDTO> ratingDTOMono = recommendationService.findByRate(rate);
         return ResponseEntity.ok().body(ratingDTOMono);
@@ -38,13 +38,13 @@ public class RecommendationController {
 
     @PatchMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Mono<RecommendationDTO>> postRating(@RequestBody @Valid RecommendationDTO dto) {
-        Mono<RecommendationDTO> rDMono = ratingServiceImp.updateById(dto.getId());
+        Mono<RecommendationDTO> rDMono = recommendationService.updateById(dto.recommendationId(), dto.rate());
         return ResponseEntity.accepted().body(rDMono);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> removeRating(String id) {
-        Mono<Void> voidMono = ratingServiceImp.removeById(id);
+    public ResponseEntity<?> removeRating(@PathVariable String id) {
+        Mono<Void> voidMono = recommendationService.removeById(id);
         return ResponseEntity.noContent().build();
     }
 }
