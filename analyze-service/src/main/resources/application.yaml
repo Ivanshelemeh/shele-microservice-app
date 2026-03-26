@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: analyze-service
+
+  datasource:
+    clickhouse:
+      url: ${DB_URL}
+      username: default
+      password: ${DB_PS}
+      driver-class-name: com.clickhouse.jdbc.ClickHouseDriver
+      hikari:
+        maximum-pool-size: 12
+        connection-timeout: 5000
+        # ClickHouse ?? ???????????? ?????????? ? ???????????? ??????
+        auto-commit: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: analyze-service
+      auto-offset-reset: earliest
+      # ?????? ?????? ? ???????? ????? ?????? ? inbox
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.example.*"
+        # ???? consumer ???? ? ?? ?????? offset
+        max.poll.records: 100
+        max.poll.interval.ms: 300000
+    listener:
+      ack-mode: manual
+      concurrency: 4
+
+    input-topic:
+      name: transactions-completed
+
+  # Flyway ? ?????? ?????????, ?? ??????????????
+  flyway:
+    clickhouse:
+      validate-on-migrate: true
+      clean-disabled: false
+    enabled: false
+
+
+  # ????????? inbox processor
+  analyze:
+    inbox:
+      batch-size: 500
+      processing-interval-ms: 5000
+      retry-max-attempts: 3
