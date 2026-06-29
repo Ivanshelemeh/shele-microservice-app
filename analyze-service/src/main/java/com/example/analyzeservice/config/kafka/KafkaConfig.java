@@ -90,24 +90,9 @@ public class KafkaConfig {
 
         var factory = new ConcurrentKafkaListenerContainerFactory<String, String>();
         factory.setConsumerFactory(consumerFactory);
-
-        // === Concurrency ===
-        // Количество потоков-consumer'ов
-        // Каждый поток — отдельный Kafka consumer в одной consumer group
-        // Если в топике 6 партиций и concurrency=3 → каждый поток читает 2 партиции
-        // Нет смысла ставить concurrency > количества партиций
         factory.setConcurrency(3);
-
-        // === Ack Mode ===
-        // MANUAL — мы сами вызываем ack.acknowledge()
-        // Offset коммитится только когда мы явно скажем
         factory.getContainerProperties()
                 .setAckMode(ContainerProperties.AckMode.MANUAL);
-
-        // === Commit interval ===
-        // Как часто коммитить offset'ы при BATCH ack mode
-        // При MANUAL — не влияет напрямую, но sync commit
-        // происходит при каждом acknowledge()
         factory.getContainerProperties().setSyncCommits(true);
 
         // === Error Handler ===
@@ -115,11 +100,6 @@ public class KafkaConfig {
         // при ошибке — retry с увеличивающимися интервалами
         // после N попыток — отправить в DLT (Dead Letter Topic)
         factory.setCommonErrorHandler(buildErrorHandler());
-
-        // === Batch listener ===
-        // false — получаем по одному сообщению в @KafkaListener
-        // true — получаем List<ConsumerRecord> (для высокого throughput)
-        // Для inbox паттерна одиночная обработка надёжнее
         factory.setBatchListener(false);
 
         return factory;

@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS analyze_inbox_tb (
     ENGINE = ReplacingMergeTree(created_at)
     ORDER BY event_id                    -- дедупликация по event_id
     PARTITION BY toYYYYMM(created_at)    -- партиционирование по месяцам
-    TTL created_at + INTERVAL 90 DAY    -- автоочистка через 90 дней
+    TTL created_at + INTERVAL 90 DAY    -- авточистка через 90 дней
     SETTINGS index_granularity = 8192;
 
 -- Индекс для выборки необработанных сообщений
