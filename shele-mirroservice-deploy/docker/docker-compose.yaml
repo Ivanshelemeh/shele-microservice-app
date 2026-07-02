@@ -5,9 +5,9 @@ services:
     ports:
       - "27017-27019:27017-27019"
     environment:
-        MONGO_INITDB_ROOT_USERNAME: root
-        MONGO_INITDB_ROOT_PASSWORD: password
-        MONGO_INITDB_DATABASE: mongo
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: mongo
     healthcheck:
       test: "mongo --eval 'db.stats().ok'"
       interval: 10s
@@ -15,6 +15,73 @@ services:
       retries: 5
       start_period: 40s
     restart: on-failure
+
+
+  bike-customer-service:
+    depends_on:
+      - fluent-bit
+      - shele-keycloack
+      - mysql-service
+    image: "bike-custom-service"
+    container_name: bike-customer
+    ports:
+      - 9001:9001
+      - 8001:8001
+    environment:
+      - BPL_JVM_THREAD_COUNT=50
+      - BPL_DEBUG_ENABLED=true
+      - BPL_DEBUG_PORT=8001
+      - SPRING_DATASOURCE_URL= jdbc:postgresql://mysql-service:3307/bike_db
+      - SPRING_PROFILES_ACTIVE=dev
+
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
+
+
+
+  grafana:
+    image: grafana/grafana:9.1.12
+    container_name: grafana
+    depends_on:
+      - loki
+      - prometheus
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=user
+      - GF_SECURITY_ADMIN_PASSWORD=password
+    volumes:
+      - ./observability/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./observability/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./observability/grafana/grafana.ini:/etc/grafana/grafana.ini
+  loki:
+    image: grafana/loki:2.6.1
+    container_name: loki
+    depends_on:
+      - fluent-bit
+    ports:
+      - 3100:3100
+
+  fluent-bit:
+    image: grafana/fluent-bit-plugin-loki:2.6.1-amd64
+    container_name: fluent-bit
+    ports:
+      - 24224:24224
+    environment:
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
+    volumes:
+      - ./observability/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+
+  prometheus:
+    image: prom/prometheus:v2.38.0
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -34,23 +101,24 @@ services:
     restart: on-failure
     command: [ "redis-server","--bind","redis_cache","--port","6379" ]
     ports:
-        - 6379:6379
+      - 6379:6379
 
   mysql-service:
     image: mysql:8.0.20
+    container_name: shele-db
     ports:
-        - 3307:3307
+      - 3307:3307
     environment:
-        - MYSQL_ROOT_PASSWORD=password
-        - MYSQL_DATABASE=bike_db
-        - MYSQL_USER=root
-        - MYSQL_PASSWORD=password
-        - MYSQL_ROOT_HOST=%
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=bike_db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_HOST=%
     healthcheck:
-        test: "/usr/bin/mysql --user=root --password=password --execute \"SHOW DATABASES;\""
-        interval: 10s
-        timeout: 5s
-        retries: 10
+      test: "/usr/bin/mysql --user=root --password=password --execute \"SHOW DATABASES;\""
+      interval: 10s
+      timeout: 5s
+      retries: 10
     restart: on-failure
 
   shele-keycloack:
@@ -64,7 +132,8 @@ services:
       - 8080:8080
 
   shele-kafka:
-    image:  confluentinc/cp-kafka:3.3.1
+    image: confluentinc/cp-kafka:3.3.1
+    container_name: sh-kafka
     ports:
       - "9092:9092"
     depends_on:
